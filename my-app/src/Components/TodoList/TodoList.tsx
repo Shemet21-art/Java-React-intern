@@ -1,33 +1,20 @@
 import { ChangeEvent, useState } from "react";
 import BaseInput from "../BaseInput/BaseInput";
-import { Button, Checkbox } from "@mui/material";
-import Box from "@mui/material/Box";
-import Modal from "@mui/material/Modal";
+import { Button } from "@mui/material";
+import Modal from "../Modal/Modal";
+import TaskItem from "../TaskItem/TaskItem";
 
-const style = {
-  position: "absolute",
-  top: "50%",
-  left: "50%",
-  transform: "translate(-50%, -50%)",
-  width: 400,
-  bgcolor: "background.paper",
-  border: "2px solid #000",
-  boxShadow: 24,
-  p: 4,
-};
-
-type Task = {
+export type Task = {
   id: number;
   todo: string;
   checked: boolean;
 };
 
 function TodoList() {
-  const [inputValue, setInputvalue] = useState("");
-  const [modalInputValue, setModalInputValue] = useState("");
-  const [listTasks, setListTasks] = useState<Task[] | any>([]);
-  const [idTask, setIdTask] = useState<null | number>(null);
-  const [open, setOpen] = useState(false);
+  const [inputValue, setInputvalue] = useState<string>("");
+  const [modalInputValue, setModalInputValue] = useState<string>("");
+  const [listTasks, setListTasks] = useState<Task[]>([]);
+  const [open, setOpen] = useState<boolean>(false);
   const [selectedTask, setSelectedTask] = useState<Task | null>(null);
 
   const openModal = (item: Task) => {
@@ -44,15 +31,10 @@ function TodoList() {
           todo: modalInputValue,
         };
       }
-      return item
+      return item;
     });
-    setListTasks(updatedList)
-    setOpen(false)
-  };
-
-  const selectTodoIdForEdit = (id: Task["id"]) => {
-    console.log(id);
-    setIdTask(id);
+    setListTasks(updatedList);
+    setOpen(false);
   };
 
   const onChangeInput = (e: ChangeEvent<HTMLInputElement>) => {
@@ -99,40 +81,23 @@ function TodoList() {
           label={"Add task "}
         />
         <Button onClick={addTask}>Add Task</Button>
-        {listTasks.map((item: any) => {
-          return (
-            <div
-              style={{
-                opacity: item.checked ? 0.5 : 1,
-                textDecoration: item.checked ? "line-through" : "none",
-              }}
-              key={item.id}
-            >
-              <p>{item.todo}</p>
-              <Button onClick={() => handleDelete(item.id)}> delete</Button>
-              <Button onClick={() => openModal(item)}> Change</Button>
-              <Checkbox onClick={() => checkTask(item.id)} />
-            </div>
-          );
-        })}
+        {listTasks.map((item: Task) => (
+          <TaskItem
+            onCheckTask={checkTask}
+            onDelete={handleDelete}
+            onOpenModal={openModal}
+            item={item}
+            key={item.id}
+          />
+        ))}
       </div>
       <Modal
-        open={open}
+        onChange={onChangeModalInput}
         onClose={() => setOpen(false)}
-        aria-labelledby="modal-modal-title"
-        aria-describedby="modal-modal-description"
-      >
-        <Box sx={style}>
-          <form>
-            <BaseInput
-              value={modalInputValue}
-              onChange={onChangeModalInput}
-              label={selectedTask?.todo || ""}
-            />
-            <Button onClick={onSave}>Change</Button>
-          </form>{" "}
-        </Box>
-      </Modal>
+        onSave={onSave}
+        open={open}
+        value={modalInputValue}
+      />
     </>
   );
 }
