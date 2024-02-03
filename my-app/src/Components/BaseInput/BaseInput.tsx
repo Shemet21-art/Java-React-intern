@@ -3,7 +3,7 @@ import { TextField } from "@mui/material"
 type Props = { 
   label : string;
   onChange: (e:React.ChangeEvent<HTMLInputElement>)=>void
-  value: string;
+  value: any;
 }
 
 function BaseInput({ label, onChange, value }:Props) {
